@@ -1,6 +1,6 @@
 # Benchmark Example - Fat JAR
 
-这个项可以使用 Maven Shade Plugin 将 Java 项目打包为一个包含所有依赖的 fat jar（也称为 uber jar）。
+这个项目可以使用 Maven Shade Plugin 将 Java 项目打包为一个包含所有依赖的 fat jar（也称为 uber jar）。
 
 ## 构建 Fat JAR
 

@@ -87,6 +87,11 @@ public class MetricsBenchmark {
                 CompletableFuture<Result<WriteOk, Err>> future =
                         greptimeDB.write(Arrays.asList(table), WriteOp.Insert, ctx);
                 future.whenComplete((result, error) -> {
+                    if (error != null) {
+                        LOG.error("Error writing data", error);
+                        return;
+                    }
+
                     semaphore.release();
 
                     int numRows = result.mapOr(0, writeOk -> writeOk.getSuccess());

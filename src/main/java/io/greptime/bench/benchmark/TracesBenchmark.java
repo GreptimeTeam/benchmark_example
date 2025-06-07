@@ -19,13 +19,13 @@ import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LogBenchmark {
+public class TracesBenchmark {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LogBenchmark.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TracesBenchmark.class);
 
     public static void main(String[] args) throws Exception {
         boolean zstdCompression = SystemPropertyUtil.getBool("zstd_compression", true);
-        int batchSize = SystemPropertyUtil.getInt("batch_size_per_request", 64 * 1024);
+        int batchSize = SystemPropertyUtil.getInt("batch_size_per_request", 20 * 1024);
         int maxRequestsInFlight = SystemPropertyUtil.getInt("max_requests_in_flight", 4);
 
         LOG.info("Using zstd compression: {}", zstdCompression);

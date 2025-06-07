@@ -57,7 +57,7 @@ public class MetricsTableDataProvider implements TableDataProvider {
                 .addField("disk_util", DataType.Float64)
                 .addField("load_util", DataType.Float64)
                 .build();
-        this.rowCount = SystemPropertyUtil.getLong("tt_metrics_table.row_count", 10_000_000_000L);
+        this.rowCount = SystemPropertyUtil.getLong("table_row_count", 10_000_000_000L);
         this.serviceNumPerApp = SystemPropertyUtil.getInt("tt_metrics_table.service_num_per_app", 20);
     }
 

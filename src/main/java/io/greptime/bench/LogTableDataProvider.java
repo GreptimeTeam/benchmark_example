@@ -16,37 +16,37 @@ public class LogTableDataProvider implements TableDataProvider {
     private final long rowCount;
 
     /*
-     CREATE TABLE IF NOT EXISTS `tt_log_table` (
-    `ts` TIMESTAMP(3) NOT NULL,
-    `log_uid` STRING NULL SKIPPING INDEX,
-    `log_message` STRING NULL,
-    `log_status` STRING NULL SKIPPING INDEX,
-    `p` STRING NULL,
-    `host_id` BIGINT NULL SKIPPING INDEX,
-    `host_name` STRING NULL,
-    `service_id` BIGINT NULL SKIPPING INDEX,
-    `service_name` STRING NULL,
-    `service_instance_id` BIGINT NULL SKIPPING INDEX,
-    `service_instance_name` STRING NULL,
-    `container_id` BIGINT NULL SKIPPING INDEX,
-    `container_name` STRING NULL,
-    `pod_id` BIGINT NULL SKIPPING INDEX,
-    `pod_name` STRING NULL,
-    `cluster_id` BIGINT NULL SKIPPING INDEX,
-    `cluster_name` STRING NULL,
-    `node_id` BIGINT NULL SKIPPING INDEX,
-    `node_name` STRING NULL,
-    `ns_id` BIGINT NULL SKIPPING INDEX,
-    `ns_name` STRING NULL,
-    `workload_id` BIGINT NULL SKIPPING INDEX,
-    `workload_name` STRING NULL,
-    TIME INDEX (`ts`)
-) ENGINE=mito
-WITH(
-  append_mode = 'true',
-  skip_wal = 'true',
-);
-     */
+         CREATE TABLE IF NOT EXISTS `tt_log_table` (
+        `ts` TIMESTAMP(3) NOT NULL,
+        `log_uid` STRING NULL SKIPPING INDEX,
+        `log_message` STRING NULL,
+        `log_status` STRING NULL SKIPPING INDEX,
+        `p` STRING NULL,
+        `host_id` BIGINT NULL SKIPPING INDEX,
+        `host_name` STRING NULL,
+        `service_id` BIGINT NULL SKIPPING INDEX,
+        `service_name` STRING NULL,
+        `service_instance_id` BIGINT NULL SKIPPING INDEX,
+        `service_instance_name` STRING NULL,
+        `container_id` BIGINT NULL SKIPPING INDEX,
+        `container_name` STRING NULL,
+        `pod_id` BIGINT NULL SKIPPING INDEX,
+        `pod_name` STRING NULL,
+        `cluster_id` BIGINT NULL SKIPPING INDEX,
+        `cluster_name` STRING NULL,
+        `node_id` BIGINT NULL SKIPPING INDEX,
+        `node_name` STRING NULL,
+        `ns_id` BIGINT NULL SKIPPING INDEX,
+        `ns_name` STRING NULL,
+        `workload_id` BIGINT NULL SKIPPING INDEX,
+        `workload_name` STRING NULL,
+        TIME INDEX (`ts`)
+    ) ENGINE=mito
+    WITH(
+      append_mode = 'true',
+      skip_wal = 'true',
+    );
+         */
 
     {
         this.tableSchema = TableSchema.newBuilder("tt_log_table")
@@ -74,7 +74,7 @@ WITH(
                 .addField("workload_id", DataType.Int64)
                 .addField("workload_name", DataType.String)
                 .build();
-        this.rowCount = SystemPropertyUtil.getLong("tt_log_table.row_count", 5_000_000_000L);
+        this.rowCount = SystemPropertyUtil.getLong("table_row_count", 5_000_000_000L);
     }
 
     @Override
@@ -111,8 +111,8 @@ WITH(
 
                 long ts = System.currentTimeMillis();
                 String logUid = UUID.randomUUID().toString();
-                String logMessage = LogTextHelper.generate1500Text(random, ts);
-                String logStatus = "log_status_" + random.nextInt(10);
+                String logMessage = LogTextHelper.generateTextWihtLen(random, ts, 1500);
+                String logStatus = LogTextHelper.randomLogLevel(random);
                 String p = "p_" + random.nextInt(10);
                 Object[] host = nextIdWithName(random, "host", 10000);
                 Object[] service = nextIdWithName(random, "service", 100000);

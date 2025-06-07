@@ -44,8 +44,8 @@ public class LogTextHelper {
         return LOG_LEVELS[random.nextInt(LOG_LEVELS.length)];
     }
 
-    public static String generate1500Text(ThreadLocalRandom random, long logTs) {
-        StringBuilder buf = new StringBuilder(2000);
+    public static String generateTextWihtLen(ThreadLocalRandom random, long logTs, int length) {
+        StringBuilder buf = new StringBuilder(length);
 
         // Choose one of several log templates to make it more realistic
         String template = LOG_TEMPLATES[random.nextInt(LOG_TEMPLATES.length)];
@@ -75,8 +75,7 @@ public class LogTextHelper {
 
         buf.append(formattedLog);
 
-        // Target length between 1100-1400 characters
-        int targetLength = random.nextInt(1100, 1400);
+        int targetLength = random.nextInt(length - 500, length);
 
         // Add stack trace for error logs to reach desired size
         if (formattedLog.startsWith("ERROR")) {

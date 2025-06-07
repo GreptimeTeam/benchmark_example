@@ -23,15 +23,53 @@ mvn clean package
 java -jar target/benchmark_example.jar
 ```
 
+## 基准测试类型
+
+该程序支持三种不同的基准测试类型，通过 `target` 系统属性指定：
+
+### 1. Metrics 基准测试（默认）
+```bash
+java -Dtarget=metrics -jar target/benchmark_example.jar
+```
+
+### 2. Logs 基准测试
+```bash
+java -Dtarget=logs -jar target/benchmark_example.jar
+```
+
+### 3. Traces 基准测试
+```bash
+java -Dtarget=traces -jar target/benchmark_example.jar
+```
+
 ## 配置参数
 
-该程序支持以下系统属性配置：
-- `tt_metrics_table.row_count`: 一共写入多少条数据，写完程序停止运行，默认 100 亿行
+### 通用参数
+- `target`: 基准测试类型（metrics/logs/traces，默认：metrics）
+- `table_row_count`: 一共写入多少条数据，写完程序停止运行（默认：Metrics 100亿行，Logs/Traces 50亿行）
 - `zstd_compression`: 是否启用 ZSTD 压缩（默认：true）
-- `batch_size_per_request`: 每次请求的批次大小（默认：1000）
-- `concurrency`: 并发数（默认：8）
+- `batch_size_per_request`: 每次请求的批次大小（Metrics 默认：1000，Logs 默认：64 * 1024, Traces 默认：20 * 1024）
 
-示例：
+### Metrics 基准测试特有参数
+- `concurrency`: 并发数（默认：4）
+- `tt_metrics_table.service_num_per_app`: 每个应用的服务数量（默认：20）
+
+### Logs/Traces 基准测试特有参数
+- `max_requests_in_flight`: 最大飞行中请求数（默认：4）
+
+## 使用示例
+
+### 运行 Metrics 基准测试
 ```bash
-java -Dzstd_compression=false -Dbatch_size_per_request=500 -Dconcurrency=4 -jar target/benchmark_example.jar
+java -Dtarget=metrics -Dtable_row_count=1000000 -Dzstd_compression=false -Dbatch_size_per_request=500 -Dconcurrency=4 -jar target/benchmark_example.jar
+```
+
+### 运行 Logs 基准测试
+```bash
+java -Dtarget=logs -Dtable_row_count=1000000 -Dbatch_size_per_request=32768 -jar target/benchmark_example.jar
+```
+
+### 运行 Traces 基准测试
+```bash
+java -Dtarget=traces -Dtable_row_count=1000000 -Dbatch_size_per_request=32768 -jar target/benchmark_example.jar
 ```

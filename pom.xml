@@ -128,7 +128,7 @@
                             <finalName>benchmark_example</finalName>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>io.greptime.bench.benchmark.MetricsBenchmark</mainClass>
+                                    <mainClass>io.greptime.bench.benchmark.Benchmark</mainClass>
                                 </transformer>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                             </transformers>

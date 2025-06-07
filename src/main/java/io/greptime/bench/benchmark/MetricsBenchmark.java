@@ -75,6 +75,8 @@ public class MetricsBenchmark {
                         row[0] = (long) row[0] - millis;
                     }
 
+                    row[3] = i % 2;
+
                     table.addRow(row);
                 }
 

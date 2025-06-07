@@ -6,29 +6,39 @@ import io.greptime.models.TableSchema;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The metrics table data provider.
- *
- * Create a table with the following schema:
- *
- * ```sql
- * CREATE TABLE tt_metrics_table (
- *     ts TIMESTAMP TIME INDEX,
- *     idc STRING INVERTED INDEX,
- *     host STRING INVERTED INDEX,
- *     service STRING INVERTED INDEX,
- *     cpu_util FLOAT64,
- *     memory_util FLOAT64,
- *     disk_util FLOAT64,
- *     load_util FLOAT64,
- *     PRIMARY KEY (idc, host, service)
- * )
- * ENGINE=mito
- * WITH('append_mode'='true');
- * ```
  */
 public class MetricsTableDataProvider implements TableDataProvider {
+
+    /* Create a table with the following schema:
+    ```sql
+    CREATE TABLE IF NOT EXISTS `tt_metrics_table` (
+        `ts` TIMESTAMP(3) NOT NULL,
+        `idc` STRING NULL INVERTED INDEX,
+        `host` STRING NULL INVERTED INDEX,
+        `shard` INT,
+        `service` STRING NULL INVERTED INDEX,
+        `url` STRING NULL,
+        `cpu_util` DOUBLE NULL,
+        `memory_util` DOUBLE NULL,
+        `disk_util` DOUBLE NULL,
+        `load_util` DOUBLE NULL,
+        TIME INDEX (`ts`),
+        PRIMARY KEY (`idc`, `host`, `service`)
+    )
+    PARTITION ON COLUMNS (shard) (
+        shard < 1,
+        shard >= 1
+    )
+    ENGINE=mito
+    WITH(
+        append_mode = 'true'
+    );
+    ```
+         */
 
     private final TableSchema tableSchema;
     private final long rowCount;
@@ -39,7 +49,9 @@ public class MetricsTableDataProvider implements TableDataProvider {
                 .addTimestamp("ts", DataType.TimestampMillisecond)
                 .addTag("idc", DataType.String)
                 .addTag("host", DataType.String)
+                .addField("shard", DataType.Int32)
                 .addTag("service", DataType.String)
+                .addField("url", DataType.String)
                 .addField("cpu_util", DataType.Float64)
                 .addField("memory_util", DataType.Float64)
                 .addField("disk_util", DataType.Float64)
@@ -89,6 +101,7 @@ public class MetricsTableDataProvider implements TableDataProvider {
                     String idc = nextIdc(random);
                     String host = nextHost(random, idc);
                     String app = nextApp(random, host);
+                    String url = nextUrl(random, ts);
 
                     // In real-world scenarios, all services on a host typically generate metrics data simultaneously,
                     // so this data generation logic aligns with real-world patterns.
@@ -101,7 +114,9 @@ public class MetricsTableDataProvider implements TableDataProvider {
                             ts,
                             idc,
                             host,
+                            i,
                             service,
+                            url,
                             random.nextDouble(0, 100), // cpu_util
                             random.nextDouble(0, 100), // memory_util
                             random.nextDouble(0, 100), // disk_util
@@ -149,6 +164,16 @@ public class MetricsTableDataProvider implements TableDataProvider {
      */
     private String nextService(ThreadLocalRandom random, String app, int index) {
         return app + "_service_" + index;
+    }
+
+    /**
+     * Returns a random URL with a timestamp-based path.
+     * The URL format is: http://127.0.0.1/helloworld/{minutes}/{random_id}
+     * where random_id is between 0 and 1999.
+     */
+    private String nextUrl(ThreadLocalRandom random, long ts) {
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(ts);
+        return String.format("http://127.0.0.1/helloworld/%d/%d", minutes, random.nextInt(2000));
     }
 }
 

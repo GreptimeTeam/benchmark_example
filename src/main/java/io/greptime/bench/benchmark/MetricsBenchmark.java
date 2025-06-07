@@ -32,7 +32,7 @@ public class MetricsBenchmark {
     public static void main(String[] args) throws Exception {
         boolean zstdCompression = SystemPropertyUtil.getBool("zstd_compression", true);
         int batchSize = SystemPropertyUtil.getInt("batch_size_per_request", 1000);
-        int concurrency = SystemPropertyUtil.getInt("concurrency", 8);
+        int concurrency = SystemPropertyUtil.getInt("concurrency", 4);
 
         Compression compression = zstdCompression ? Compression.Zstd : Compression.None;
         Context ctx = Context.newDefault().withCompression(compression);
@@ -89,12 +89,12 @@ public class MetricsBenchmark {
                 CompletableFuture<Result<WriteOk, Err>> future =
                         greptimeDB.write(Arrays.asList(table), WriteOp.Insert, ctx);
                 future.whenComplete((result, error) -> {
+                    semaphore.release();
+
                     if (error != null) {
                         LOG.error("Error writing data", error);
                         return;
                     }
-
-                    semaphore.release();
 
                     int numRows = result.mapOr(0, writeOk -> writeOk.getSuccess());
                     totalRows.addAndGet(numRows);

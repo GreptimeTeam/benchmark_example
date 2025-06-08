@@ -4,8 +4,8 @@ import io.greptime.BulkStreamWriter;
 import io.greptime.BulkWrite;
 import io.greptime.GreptimeDB;
 import io.greptime.bench.DBConnector;
-import io.greptime.bench.LogTableDataProvider;
 import io.greptime.bench.TableDataProvider;
+import io.greptime.bench.TraceTableDataProvider;
 import io.greptime.common.util.MetricsUtil;
 import io.greptime.common.util.SystemPropertyUtil;
 import io.greptime.metrics.ExporterOptions;
@@ -47,7 +47,7 @@ public class TracesBenchmark {
                 .maxRequestsInFlight(maxRequestsInFlight)
                 .build();
 
-        TableDataProvider tableDataProvider = new LogTableDataProvider();
+        TableDataProvider tableDataProvider = new TraceTableDataProvider();
         LOG.info("Table data provider: {}", tableDataProvider.getClass().getName());
         tableDataProvider.init();
         TableSchema tableSchema = tableDataProvider.tableSchema();

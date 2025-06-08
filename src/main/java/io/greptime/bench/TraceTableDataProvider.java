@@ -16,6 +16,7 @@ public class TraceTableDataProvider implements TableDataProvider {
     private final long rowCount;
 
     /*
+    ```sql
     CREATE TABLE IF NOT EXISTS `tt_trace_table` (
         `ts` TIMESTAMP(3) NOT NULL,
         `trace_id` STRING NULL SKIPPING INDEX,
@@ -29,8 +30,8 @@ public class TraceTableDataProvider implements TableDataProvider {
         `scope_schema_url` STRING NULL,
         `resource_attributes` STRING NULL,
         `resource_schema_url` STRING NULL,
-        `service_instance_id` STRING NULL SKIPPING INDEX,
-        `service_id` STRING NULL SKIPPING INDEX,
+        `service_instance_id` BIGINT NULL SKIPPING INDEX,
+        `service_id` BITINT NULL SKIPPING INDEX,
         `host_id` BIGINT NULL SKIPPING INDEX,
         `process_group_id` BIGINT NULL SKIPPING INDEX,
         `interface_id` BIGINT NULL SKIPPING INDEX,
@@ -44,7 +45,8 @@ public class TraceTableDataProvider implements TableDataProvider {
       append_mode = 'true',
       skip_wal = 'true',
     );
-         */
+    ```
+     */
 
     {
         this.tableSchema = TableSchema.newBuilder("tt_trace_table")

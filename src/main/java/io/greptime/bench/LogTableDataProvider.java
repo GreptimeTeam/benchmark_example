@@ -16,7 +16,8 @@ public class LogTableDataProvider implements TableDataProvider {
     private final long rowCount;
 
     /*
-         CREATE TABLE IF NOT EXISTS `tt_log_table` (
+    ```sql
+    CREATE TABLE IF NOT EXISTS `tt_log_table` (
         `ts` TIMESTAMP(3) NOT NULL,
         `log_uid` STRING NULL SKIPPING INDEX,
         `log_message` STRING NULL,
@@ -46,7 +47,8 @@ public class LogTableDataProvider implements TableDataProvider {
       append_mode = 'true',
       skip_wal = 'true',
     );
-         */
+    ```
+    */
 
     {
         this.tableSchema = TableSchema.newBuilder("tt_log_table")

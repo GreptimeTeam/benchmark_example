@@ -38,7 +38,7 @@ public class MetricsTableDataProvider implements TableDataProvider {
         append_mode = 'true'
     );
     ```
-         */
+    */
 
     private final TableSchema tableSchema;
     private final long rowCount;

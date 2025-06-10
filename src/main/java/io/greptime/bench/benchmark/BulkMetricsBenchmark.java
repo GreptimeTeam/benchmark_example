@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BulkMetricsBenchmark {
@@ -29,10 +30,12 @@ public class BulkMetricsBenchmark {
         boolean zstdCompression = SystemPropertyUtil.getBool("zstd_compression", true);
         int batchSize = SystemPropertyUtil.getInt("batch_size_per_request", 10_0000);
         int maxRequestsInFlight = SystemPropertyUtil.getInt("max_requests_in_flight", 4);
+        int concurrency = SystemPropertyUtil.getInt("concurrency", 4);
 
         LOG.info("Using zstd compression: {}", zstdCompression);
         LOG.info("Batch size: {}", batchSize);
         LOG.info("Max requests in flight: {}", maxRequestsInFlight);
+        LOG.info("Concurrency: {}", concurrency);
 
         Compression compression = zstdCompression ? Compression.Zstd : Compression.None;
         Context ctx = Context.newDefault().withCompression(compression);
@@ -54,6 +57,7 @@ public class BulkMetricsBenchmark {
         tableDataProvider.init();
         TableSchema tableSchema = tableDataProvider.tableSchema();
 
+        Semaphore semaphore = new Semaphore(concurrency);
         int shard = 0;
         int requestCount = 1;
         long millsOneDay = 1000 * 60 * 60 * 24;
@@ -86,10 +90,14 @@ public class BulkMetricsBenchmark {
                 // Complete the table; adding rows is no longer permitted.
                 table.complete();
 
+                semaphore.acquire();
+
                 // Write the table data to the server
                 CompletableFuture<Integer> future = writer.writeNext();
                 long fStart = System.nanoTime();
                 future.whenComplete((r, t) -> {
+                    semaphore.release();
+
                     long costMs = (System.nanoTime() - fStart) / 1000000;
                     if (t != null) {
                         LOG.error("Error writing data, time cost: {}ms", costMs, t);
@@ -107,6 +115,9 @@ public class BulkMetricsBenchmark {
             }
 
             writer.completed();
+
+            // Wait for all the requests to complete
+            semaphore.acquire(concurrency);
 
             LOG.info("Completed writing data, time cost: {}s", (System.nanoTime() - start) / 1000000000);
         } finally {

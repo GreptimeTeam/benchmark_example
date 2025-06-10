@@ -14,6 +14,13 @@
 mvn clean package
 ```
 
+### 方法三：使用 Docker 构建
+```bash
+IMAGE_TAG=weny-2025-0610-01
+
+./build-and-push.sh
+```
+
 ## 运行应用
 
 构建完成后，你会在 `target/` 目录下看到 `benchmark_example.jar` 文件（大约 45MB）。

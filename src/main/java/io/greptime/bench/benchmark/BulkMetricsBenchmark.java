@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class BulkMetricsBenchmark {
 
@@ -26,7 +27,7 @@ public class BulkMetricsBenchmark {
 
     public static void main(String[] args) throws Exception {
         boolean zstdCompression = SystemPropertyUtil.getBool("zstd_compression", true);
-        int batchSize = SystemPropertyUtil.getInt("batch_size_per_request", 1000);
+        int batchSize = SystemPropertyUtil.getInt("batch_size_per_request", 10_0000);
         int maxRequestsInFlight = SystemPropertyUtil.getInt("max_requests_in_flight", 4);
 
         LOG.info("Using zstd compression: {}", zstdCompression);
@@ -54,6 +55,8 @@ public class BulkMetricsBenchmark {
         TableSchema tableSchema = tableDataProvider.tableSchema();
 
         int shard = 0;
+        int requestCount = 1;
+        long millsOneDay = 1000 * 60 * 60 * 24;
 
         LOG.info("Start writing data");
         try (BulkStreamWriter writer = greptimeDB.bulkStreamWriter(tableSchema, cfg, ctx)) {
@@ -61,13 +64,20 @@ public class BulkMetricsBenchmark {
 
             long start = System.nanoTime();
             for (; ; ) {
-                Table.TableBufferRoot table = writer.tableBufferRoot(10240);
+                Table.TableBufferRoot table = writer.tableBufferRoot(10_0000);
                 for (int i = 0; i < batchSize; i++) {
                     if (!rows.hasNext()) {
                         break;
                     }
-
                     Object[] row = rows.next();
+
+                    // Adjust timestamp to be 3-7 days ago for 10% of the data
+                    if (requestCount % 10 == 0) {
+                        int days = ThreadLocalRandom.current().nextInt(3, 8);
+                        long millis = millsOneDay * days;
+                        row[0] = (long) row[0] - millis;
+                    }
+
                     row[3] = shard % 2;
 
                     table.addRow(row);
@@ -89,6 +99,7 @@ public class BulkMetricsBenchmark {
                 });
 
                 shard++;
+                requestCount++;
 
                 if (!rows.hasNext()) {
                     break;

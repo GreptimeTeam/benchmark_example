@@ -20,7 +20,7 @@ public class LogTableDataProvider implements TableDataProvider {
     CREATE TABLE IF NOT EXISTS `tt_log_table` (
         `ts` TIMESTAMP(3) NOT NULL,
         `log_uid` STRING NULL SKIPPING INDEX,
-        `log_message` STRING NULL,
+        `log_message` STRING NULL FULLTEXT INDEX,
         `log_status` STRING NULL SKIPPING INDEX,
         `p` STRING NULL,
         `host_id` BIGINT NULL SKIPPING INDEX,

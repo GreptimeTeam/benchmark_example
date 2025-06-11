@@ -3,6 +3,7 @@ package io.greptime.bench;
 import io.greptime.common.util.SystemPropertyUtil;
 import io.greptime.models.DataType;
 import io.greptime.models.TableSchema;
+
 import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -15,7 +16,7 @@ public class BulkMetricsTableDataProvider implements TableDataProvider {
 
     /*
     ```sql
-    CREATE TABLE IF NOT EXISTS `tt_metrics_table` (
+    CREATE TABLE `tt_metrics_table` (
         `ts` TIMESTAMP(3) NOT NULL,
         `idc` STRING NULL INVERTED INDEX,
         `host` STRING NULL INVERTED INDEX,
@@ -26,6 +27,7 @@ public class BulkMetricsTableDataProvider implements TableDataProvider {
         `memory_util` DOUBLE NULL,
         `disk_util` DOUBLE NULL,
         `load_util` DOUBLE NULL,
+        `session_id` STRING NULL,
         TIME INDEX (`ts`),
     )
     PARTITION ON COLUMNS (shard) (
@@ -51,6 +53,7 @@ public class BulkMetricsTableDataProvider implements TableDataProvider {
                 .addField("memory_util", DataType.Float64)
                 .addField("disk_util", DataType.Float64)
                 .addField("load_util", DataType.Float64)
+                .addField("session_id", DataType.String)
                 .build();
         this.rowCount = SystemPropertyUtil.getLong("table_row_count", 5_000_000_000L);
         this.serviceNumPerApp = SystemPropertyUtil.getInt("tt_metrics_table.service_num_per_app", 20);
@@ -94,6 +97,7 @@ public class BulkMetricsTableDataProvider implements TableDataProvider {
                 String app = nextApp(random, host);
                 String url = nextUrl(random, ts);
                 String service = nextService(random, app, (int) (index % serviceNumPerApp));
+                String sessionId = nextSessionId(random);
 
                 return new Object[] {
                     ts,
@@ -106,6 +110,7 @@ public class BulkMetricsTableDataProvider implements TableDataProvider {
                     random.nextDouble(0, 100), // memory_util
                     random.nextDouble(0, 100), // disk_util
                     random.nextDouble(0, 100), // load_util
+                    sessionId
                 };
             }
         };
@@ -153,5 +158,9 @@ public class BulkMetricsTableDataProvider implements TableDataProvider {
     private String nextUrl(ThreadLocalRandom random, long ts) {
         long minutes = TimeUnit.MILLISECONDS.toMinutes(ts);
         return String.format("http://127.0.0.1/helloworld/%d/%d", minutes, random.nextInt(2000));
+    }
+
+    private String nextSessionId(ThreadLocalRandom random) {
+        return "session_" + random.nextInt(1000_0000);
     }
 }

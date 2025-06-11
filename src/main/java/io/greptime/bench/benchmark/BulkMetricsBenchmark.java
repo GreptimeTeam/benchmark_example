@@ -14,13 +14,12 @@ import io.greptime.models.Table;
 import io.greptime.models.TableSchema;
 import io.greptime.rpc.Compression;
 import io.greptime.rpc.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Iterator;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BulkMetricsBenchmark {
 

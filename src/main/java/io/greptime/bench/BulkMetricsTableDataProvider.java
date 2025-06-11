@@ -36,7 +36,7 @@ public class BulkMetricsTableDataProvider implements TableDataProvider {
     )
     ENGINE=mito
     WITH(
-        append_mode = 'true'
+        append_mode = 'true',
         skip_wal = 'true',
     );
     ```

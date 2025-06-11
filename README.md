@@ -46,7 +46,7 @@ java -Dtarget=traces -jar target/benchmark_example.jar
 
 ### 通用参数
 - `target`: 基准测试类型（metrics/logs/traces，默认：metrics）
-- `table_row_count`: 一共写入多少条数据，写完程序停止运行（默认：Metrics 100亿行，Logs/Traces 50亿行）
+- `table_row_count`: 一共写入多少条数据，写完程序停止运行（默认：Metrics 50 亿行，Logs/Traces 1 亿行）
 - `zstd_compression`: 是否启用 ZSTD 压缩（默认：true）
 - `batch_size_per_request`: 每次请求的批次大小（Metrics 默认：1000，Logs 默认：64 * 1024, Traces 默认：20 * 1024）
 

@@ -72,7 +72,7 @@ public class TraceTableDataProvider implements TableDataProvider {
                 .addField("app_request_id", DataType.Int64)
                 .addField("detail", DataType.String)
                 .build();
-        this.rowCount = SystemPropertyUtil.getLong("table_row_count", 5_000_000_000L);
+        this.rowCount = SystemPropertyUtil.getLong("table_row_count", 100_000_000L);
     }
 
     @Override

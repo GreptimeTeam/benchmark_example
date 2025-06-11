@@ -76,7 +76,7 @@ public class LogTableDataProvider implements TableDataProvider {
                 .addField("workload_id", DataType.Int64)
                 .addField("workload_name", DataType.String)
                 .build();
-        this.rowCount = SystemPropertyUtil.getLong("table_row_count", 5_000_000_000L);
+        this.rowCount = SystemPropertyUtil.getLong("table_row_count", 100_000_000L);
     }
 
     @Override

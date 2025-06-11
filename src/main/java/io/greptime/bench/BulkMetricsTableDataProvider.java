@@ -3,7 +3,6 @@ package io.greptime.bench;
 import io.greptime.common.util.SystemPropertyUtil;
 import io.greptime.models.DataType;
 import io.greptime.models.TableSchema;
-
 import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -53,7 +52,7 @@ public class BulkMetricsTableDataProvider implements TableDataProvider {
                 .addField("disk_util", DataType.Float64)
                 .addField("load_util", DataType.Float64)
                 .build();
-        this.rowCount = SystemPropertyUtil.getLong("table_row_count", 10_000_000_000L);
+        this.rowCount = SystemPropertyUtil.getLong("table_row_count", 5_000_000_000L);
         this.serviceNumPerApp = SystemPropertyUtil.getInt("tt_metrics_table.service_num_per_app", 20);
     }
 
@@ -96,17 +95,17 @@ public class BulkMetricsTableDataProvider implements TableDataProvider {
                 String url = nextUrl(random, ts);
                 String service = nextService(random, app, (int) (index % serviceNumPerApp));
 
-                return new Object[]{
-                        ts,
-                        idc,
-                        host,
-                        0,
-                        service,
-                        url,
-                        random.nextDouble(0, 100), // cpu_util
-                        random.nextDouble(0, 100), // memory_util
-                        random.nextDouble(0, 100), // disk_util
-                        random.nextDouble(0, 100), // load_util
+                return new Object[] {
+                    ts,
+                    idc,
+                    host,
+                    0,
+                    service,
+                    url,
+                    random.nextDouble(0, 100), // cpu_util
+                    random.nextDouble(0, 100), // memory_util
+                    random.nextDouble(0, 100), // disk_util
+                    random.nextDouble(0, 100), // load_util
                 };
             }
         };

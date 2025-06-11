@@ -20,7 +20,7 @@ public class LogTableDataProvider implements TableDataProvider {
     CREATE TABLE IF NOT EXISTS `tt_log_table` (
         `ts` TIMESTAMP(3) NOT NULL,
         `log_uid` STRING NULL SKIPPING INDEX,
-        `log_message` STRING NULL,
+        `log_message` STRING NULL FULLTEXT INDEX,
         `log_status` STRING NULL SKIPPING INDEX,
         `p` STRING NULL,
         `host_id` BIGINT NULL SKIPPING INDEX,
@@ -76,7 +76,7 @@ public class LogTableDataProvider implements TableDataProvider {
                 .addField("workload_id", DataType.Int64)
                 .addField("workload_name", DataType.String)
                 .build();
-        this.rowCount = SystemPropertyUtil.getLong("table_row_count", 5_000_000_000L);
+        this.rowCount = SystemPropertyUtil.getLong("table_row_count", 100_000_000L);
     }
 
     @Override

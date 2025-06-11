@@ -61,6 +61,7 @@ public class MetricsBenchmark {
             AtomicLong totalRows = new AtomicLong(0);
             for (int i = 0; ; i++) {
                 Table table = Table.from(tableSchema);
+                int days = ThreadLocalRandom.current().nextInt(3, 8);
 
                 for (int j = 0; j < batchSize; j++) {
                     if (!rows.hasNext()) {
@@ -70,7 +71,6 @@ public class MetricsBenchmark {
 
                     // Adjust timestamp to be 3-7 days ago for 10% of the data
                     if (i % 10 == 0) {
-                        int days = ThreadLocalRandom.current().nextInt(3, 8);
                         long millis = millsOneDay * days;
                         row[0] = (long) row[0] - millis;
                     }

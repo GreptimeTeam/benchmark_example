@@ -14,13 +14,12 @@ import io.greptime.models.Table;
 import io.greptime.models.TableSchema;
 import io.greptime.rpc.Compression;
 import io.greptime.rpc.Context;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Iterator;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BulkMetricsBenchmark {
 
@@ -69,6 +68,7 @@ public class BulkMetricsBenchmark {
             long start = System.nanoTime();
             for (; ; ) {
                 Table.TableBufferRoot table = writer.tableBufferRoot(10_0000);
+                int days = ThreadLocalRandom.current().nextInt(3, 8);
                 for (int i = 0; i < batchSize; i++) {
                     if (!rows.hasNext()) {
                         break;
@@ -77,7 +77,6 @@ public class BulkMetricsBenchmark {
 
                     // Adjust timestamp to be 3-7 days ago for 10% of the data
                     if (requestCount % 10 == 0) {
-                        int days = ThreadLocalRandom.current().nextInt(3, 8);
                         long millis = millsOneDay * days;
                         row[0] = (long) row[0] - millis;
                     }

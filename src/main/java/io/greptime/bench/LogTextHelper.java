@@ -47,8 +47,20 @@ public class LogTextHelper {
     public static String generateTextWihtLen(ThreadLocalRandom random, long logTs, int length) {
         StringBuilder buf = new StringBuilder(length);
 
-        // Choose one of several log templates to make it more realistic
-        String template = LOG_TEMPLATES[random.nextInt(LOG_TEMPLATES.length)];
+        // Choose template based on log level distribution
+        int r = random.nextInt(100);
+        String template;
+        if (r < 1) { // 1% ERROR
+            template = LOG_TEMPLATES[2]; // ERROR template
+        } else if (r < 6) { // 5% WARN
+            template = LOG_TEMPLATES[1]; // WARN template
+        } else if (r < 16) { // 10% DEBUG
+            template = LOG_TEMPLATES[3]; // DEBUG template
+        } else { // 84% INFO
+            template = random.nextBoolean()
+                    ? LOG_TEMPLATES[0]
+                    : LOG_TEMPLATES[4]; // Randomly choose between INFO templates
+        }
 
         // Format the template with the prepared values
         String formattedLog;

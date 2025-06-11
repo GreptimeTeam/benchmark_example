@@ -65,22 +65,22 @@ public class LogTextHelper {
         // Format the template with the prepared values
         String formattedLog;
         if (template.startsWith("INFO: Request")) {
-            String requestId = "req_" + random.nextLong(1000000);
+            String requestId = "req" + random.nextLong(1000000);
             int duration = random.nextInt(1, 5000);
-            String userId = "user_" + random.nextInt(10000);
+            String userId = "user" + random.nextInt(10000);
             formattedLog = String.format(template, requestId, duration, userId);
         } else if (template.startsWith("WARN:")) {
-            String queryId = "query_" + random.nextInt(50000);
+            String queryId = "query" + random.nextInt(50000);
             int duration = random.nextInt(1, 5000);
-            formattedLog = String.format(template, queryId, duration, "SELECT * FROM table_" + random.nextInt(100));
+            formattedLog = String.format(template, queryId, duration, "SELECT * FROM table" + random.nextInt(100));
         } else if (template.startsWith("ERROR:")) {
-            formattedLog = String.format(template, random.nextInt(5), "Connection refused", "db-" + random.nextInt(10));
+            formattedLog = String.format(template, random.nextInt(5), "Connection refused", "db" + random.nextInt(10));
         } else if (template.startsWith("DEBUG:")) {
             int count = random.nextInt(10000);
             int percentage = random.nextInt(100);
             formattedLog = String.format(template, percentage, count, random.nextInt(1000), random.nextInt(512));
         } else { // Second INFO template
-            String userId = "user_" + random.nextInt(10000);
+            String userId = "user" + random.nextInt(10000);
             formattedLog = String.format(
                     template, userId, "192.168." + random.nextInt(256) + "." + random.nextInt(256), logTs);
         }

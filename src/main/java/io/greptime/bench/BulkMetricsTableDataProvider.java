@@ -3,7 +3,6 @@ package io.greptime.bench;
 import io.greptime.common.util.SystemPropertyUtil;
 import io.greptime.models.DataType;
 import io.greptime.models.TableSchema;
-
 import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;

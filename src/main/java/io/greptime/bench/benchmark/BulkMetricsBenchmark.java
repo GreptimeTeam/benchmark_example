@@ -68,6 +68,7 @@ public class BulkMetricsBenchmark {
             long start = System.nanoTime();
             for (; ; ) {
                 Table.TableBufferRoot table = writer.tableBufferRoot(10_0000);
+                int days = ThreadLocalRandom.current().nextInt(3, 8);
                 for (int i = 0; i < batchSize; i++) {
                     if (!rows.hasNext()) {
                         break;
@@ -76,7 +77,6 @@ public class BulkMetricsBenchmark {
 
                     // Adjust timestamp to be 3-7 days ago for 10% of the data
                     if (requestCount % 10 == 0) {
-                        int days = ThreadLocalRandom.current().nextInt(3, 8);
                         long millis = millsOneDay * days;
                         row[0] = (long) row[0] - millis;
                     }

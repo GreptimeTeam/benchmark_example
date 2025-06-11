@@ -11,6 +11,8 @@ public class Benchmark {
             LogsBenchmark.main(args);
         } else if (target.equalsIgnoreCase("traces")) {
             TracesBenchmark.main(args);
+        } else if (target.equalsIgnoreCase("bulk_metrics")) {
+            BulkMetricsBenchmark.main(args);
         } else {
             throw new IllegalArgumentException("Invalid target: " + target);
         }

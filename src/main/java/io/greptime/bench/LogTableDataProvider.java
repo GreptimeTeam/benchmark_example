@@ -14,6 +14,7 @@ public class LogTableDataProvider implements TableDataProvider {
 
     private final TableSchema tableSchema;
     private final long rowCount;
+    private final String tableName;
 
     /*
     ```sql
@@ -50,8 +51,13 @@ public class LogTableDataProvider implements TableDataProvider {
     ```
     */
 
-    {
-        this.tableSchema = TableSchema.newBuilder("tt_log_table")
+    public LogTableDataProvider() {
+        this("tt_log_table");
+    }
+
+    public LogTableDataProvider(String tableName) {
+        this.tableName = tableName;
+        this.tableSchema = TableSchema.newBuilder(tableName)
                 .addTimestamp("ts", DataType.TimestampMillisecond)
                 .addField("log_uid", DataType.String)
                 .addField("log_message", DataType.String)

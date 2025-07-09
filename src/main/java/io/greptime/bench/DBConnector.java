@@ -19,6 +19,7 @@ package io.greptime.bench;
 import io.greptime.GreptimeDB;
 import io.greptime.options.GreptimeOptions;
 import io.greptime.rpc.RpcOptions;
+import io.greptime.common.util.SystemPropertyUtil;
 import java.io.IOException;
 import java.util.Properties;
 import org.slf4j.Logger;
@@ -38,8 +39,17 @@ public class DBConnector {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        String database = (String) prop.get("db.database");
-        String endpointsStr = prop.getProperty("db.endpoints");
+        
+        String database = SystemPropertyUtil.get("db.database");
+        if (database == null) {
+            database = (String) prop.get("db.database");
+        }
+        
+        String endpointsStr = SystemPropertyUtil.get("db.endpoints");
+        if (endpointsStr == null) {
+            endpointsStr = prop.getProperty("db.endpoints");
+        }
+        
         String[] endpoints = endpointsStr.split(",");
         RpcOptions rpcOptions = RpcOptions.newDefault();
         rpcOptions.setDefaultRpcTimeout(60 * 1000);

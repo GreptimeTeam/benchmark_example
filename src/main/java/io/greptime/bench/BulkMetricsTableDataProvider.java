@@ -106,10 +106,10 @@ public class BulkMetricsTableDataProvider implements TableDataProvider {
                     0,
                     service,
                     url,
-                    random.nextDouble(0, 100), // cpu_util
-                    random.nextDouble(0, 100), // memory_util
-                    random.nextDouble(0, 100), // disk_util
-                    random.nextDouble(0, 100), // load_util
+                    randomTwoDecimalPlacesDouble(random), // cpu_util
+                    randomTwoDecimalPlacesDouble(random), // memory_util
+                    randomTwoDecimalPlacesDouble(random), // disk_util
+                    randomTwoDecimalPlacesDouble(random), // load_util
                     sessionId
                 };
             }
@@ -162,5 +162,10 @@ public class BulkMetricsTableDataProvider implements TableDataProvider {
 
     private String nextSessionId(ThreadLocalRandom random) {
         return "session_" + random.nextInt(1000_0000);
+    }
+
+    private double randomTwoDecimalPlacesDouble(ThreadLocalRandom random) {
+        double d = random.nextDouble(0, 100);
+        return Math.round(d * 100.0) / 100.0;
     }
 }

@@ -41,7 +41,7 @@ public class BulkMetricsBenchmark {
 
         // Start a metrics exporter
         MetricsExporter metricsExporter = new MetricsExporter(MetricsUtil.metricRegistry());
-        metricsExporter.init(ExporterOptions.newDefault());
+        // metricsExporter.init(ExporterOptions.newDefault());
 
         GreptimeDB greptimeDB = DBConnector.connect();
         BulkWrite.Config cfg = BulkWrite.Config.newBuilder()

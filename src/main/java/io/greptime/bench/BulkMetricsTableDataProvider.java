@@ -99,6 +99,8 @@ public class BulkMetricsTableDataProvider implements TableDataProvider {
                 String service = nextService(random, app, (int) (index % serviceNumPerApp));
                 String sessionId = nextSessionId(random);
 
+                double d = Math.rount(index * 100.0) / 100.0;
+                
                 return new Object[] {
                     ts,
                     idc,
@@ -106,10 +108,10 @@ public class BulkMetricsTableDataProvider implements TableDataProvider {
                     0,
                     service,
                     url,
-                    randomTwoDecimalPlacesDouble(random), // cpu_util
-                    randomTwoDecimalPlacesDouble(random), // memory_util
-                    randomTwoDecimalPlacesDouble(random), // disk_util
-                    randomTwoDecimalPlacesDouble(random), // load_util
+                    d, // cpu_util
+                    d, // memory_util
+                    d, // disk_util
+                    d, // load_util
                     sessionId
                 };
             }
@@ -162,10 +164,5 @@ public class BulkMetricsTableDataProvider implements TableDataProvider {
 
     private String nextSessionId(ThreadLocalRandom random) {
         return "session_" + random.nextInt(1000_0000);
-    }
-
-    private double randomTwoDecimalPlacesDouble(ThreadLocalRandom random) {
-        double d = random.nextDouble(0, 100);
-        return Math.round(d * 100.0) / 100.0;
     }
 }

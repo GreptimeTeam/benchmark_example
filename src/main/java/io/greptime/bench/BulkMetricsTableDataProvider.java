@@ -99,7 +99,7 @@ public class BulkMetricsTableDataProvider implements TableDataProvider {
                 String service = nextService(random, app, (int) (index % serviceNumPerApp));
                 String sessionId = nextSessionId(random);
 
-                double d = Math.rount(index * 100.0) / 100.0;
+                double d = Math.round(index * 100.0) / 100.0;
                 
                 return new Object[] {
                     ts,

@@ -58,7 +58,7 @@ public class MetricsBenchmark {
             long millsOneDay = 1000 * 60 * 60 * 24;
 
             long start = System.nanoTime();
-            AtomicLong totalRows = new AtomicLong(0);
+            AtomicLong totalRowsWritten = new AtomicLong(0);
             for (int i = 0; ; i++) {
                 Table table = Table.from(tableSchema);
                 int days = ThreadLocalRandom.current().nextInt(3, 8);
@@ -88,21 +88,28 @@ public class MetricsBenchmark {
                 // Write the table data to the server
                 CompletableFuture<Result<WriteOk, Err>> future =
                         greptimeDB.write(Arrays.asList(table), WriteOp.Insert, ctx);
+                long fStart = System.nanoTime();
                 future.whenComplete((result, error) -> {
                     semaphore.release();
 
+                    long costMs = (System.nanoTime() - fStart) / 1000000;
                     if (error != null) {
                         LOG.error("Error writing data", error);
                         return;
                     }
 
                     int numRows = result.mapOr(0, writeOk -> writeOk.getSuccess());
-                    totalRows.addAndGet(numRows);
+                    long totalRows = totalRowsWritten.addAndGet(numRows);
+                    long totalElapsedSec = (System.nanoTime() - start) / 1000000000;
+                    long writeRatePerSecond = totalElapsedSec > 0 ? totalRows / totalElapsedSec : 0;
+                    LOG.info(
+                            "Wrote rows: {}, time cost: {}ms, total rows: {}, total elapsed: {}s, write rate: {} rows/sec",
+                            numRows,
+                            costMs,
+                            totalRows,
+                            totalElapsedSec,
+                            writeRatePerSecond);
                 });
-
-                if (i % 100 == 0) {
-                    LOG.info("Wrote {} rows", totalRows.get());
-                }
 
                 if (!rows.hasNext()) {
                     break;

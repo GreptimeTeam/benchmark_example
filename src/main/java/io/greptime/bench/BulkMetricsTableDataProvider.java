@@ -106,10 +106,10 @@ public class BulkMetricsTableDataProvider implements TableDataProvider {
                     0,
                     service,
                     url,
-                    random.nextDouble(0, 100), // cpu_util
-                    random.nextDouble(0, 100), // memory_util
-                    random.nextDouble(0, 100), // disk_util
-                    random.nextDouble(0, 100), // load_util
+                    random.nextDouble(0.1, 0.2), // cpu_util
+                    random.nextDouble(0.3, 0.4), // memory_util
+                    random.nextDouble(0.6, 0.7), // disk_util
+                    random.nextDouble(8.8, 8.9), // load_util
                     sessionId
                 };
             }

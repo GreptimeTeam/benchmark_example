@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,13 +61,14 @@ public class BulkMetricsBenchmark {
         int shard = 0;
         int requestCount = 1;
         long millsOneDay = 1000 * 60 * 60 * 24;
+        AtomicLong totalRowsWritten = new AtomicLong(0);
 
         LOG.info("Start writing data");
         try (BulkStreamWriter writer = greptimeDB.bulkStreamWriter(tableSchema, cfg, ctx)) {
             Iterator<Object[]> rows = tableDataProvider.rows();
 
             long start = System.nanoTime();
-            for (; ; ) {
+            do {
                 Table.TableBufferRoot table = writer.tableBufferRoot(10_0000);
                 int days = ThreadLocalRandom.current().nextInt(3, 8);
                 for (int i = 0; i < batchSize; i++) {
@@ -100,18 +102,24 @@ public class BulkMetricsBenchmark {
                     long costMs = (System.nanoTime() - fStart) / 1000000;
                     if (t != null) {
                         LOG.error("Error writing data, time cost: {}ms", costMs, t);
-                    } else {
-                        LOG.info("Wrote rows: {}, time cost: {}ms", r, costMs);
+                        return;
                     }
+
+                    long totalRows = totalRowsWritten.addAndGet(r);
+                    long totalElapsedSec = (System.nanoTime() - start) / 1000000000;
+                    long writeRatePerSecond = totalElapsedSec > 0 ? totalRows / totalElapsedSec : 0;
+                    LOG.info(
+                            "Wrote rows: {}, time cost: {}ms, total rows: {}, total elapsed: {}s, write rate: {} rows/sec",
+                            r,
+                            costMs,
+                            totalRows,
+                            totalElapsedSec,
+                            writeRatePerSecond);
                 });
 
                 shard++;
                 requestCount++;
-
-                if (!rows.hasNext()) {
-                    break;
-                }
-            }
+            } while (rows.hasNext());
 
             writer.completed();
 

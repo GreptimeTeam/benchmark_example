@@ -22,3 +22,23 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         path: ./target/benchmark_example.jar
+
+    - name: Login to Aliyun ACR
+      uses: nick-fields/retry@v3
+      with:
+        timeout_minutes: 1
+        max_attempts: 10
+        retry_on: any
+        command: docker login --username='${{ secrets.ALICLOUD_USERNAME }}' --password='${{ secrets.ALICLOUD_PASSWORD }}' greptime-registry.cn-hangzhou.cr.aliyuncs.com
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build and push
+      uses: docker/build-push-action@v6
+      with:
+        push: true
+        tags: greptime-registry.cn-hangzhou.cr.aliyuncs.com/tools/benchmark_example:latest

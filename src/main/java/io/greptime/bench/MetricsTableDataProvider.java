@@ -57,6 +57,7 @@ public class MetricsTableDataProvider implements TableDataProvider {
                 .addField("memory_util", DataType.Float64)
                 .addField("disk_util", DataType.Float64)
                 .addField("load_util", DataType.Float64)
+                .addField("session_id", DataType.String)
                 .build();
         this.rowCount = SystemPropertyUtil.getLong("table_row_count", 5_000_000_000L);
         this.serviceNumPerApp = SystemPropertyUtil.getInt("tt_metrics_table.service_num_per_app", 20);
@@ -103,6 +104,7 @@ public class MetricsTableDataProvider implements TableDataProvider {
                     String host = nextHost(random, idc);
                     String app = nextApp(random, host);
                     String url = nextUrl(random, ts);
+                    String sessionId = nextSessionId(random);
 
                     // In real-world scenarios, all services on a host typically generate metrics data simultaneously,
                     // so this data generation logic aligns with real-world patterns.
@@ -119,10 +121,11 @@ public class MetricsTableDataProvider implements TableDataProvider {
                             shard,
                             service,
                             url,
-                            random.nextDouble(0, 100), // cpu_util
-                            random.nextDouble(0, 100), // memory_util
-                            random.nextDouble(0, 100), // disk_util
-                            random.nextDouble(0, 100), // load_util
+                            random.nextDouble(0.1, 0.2), // cpu_util
+                            random.nextDouble(0.3, 0.4), // memory_util
+                            random.nextDouble(0.6, 0.7), // disk_util
+                            random.nextDouble(8.8, 8.9), // load_util
+                            sessionId
                         });
                     }
 
@@ -176,6 +179,10 @@ public class MetricsTableDataProvider implements TableDataProvider {
     private String nextUrl(ThreadLocalRandom random, long ts) {
         long minutes = TimeUnit.MILLISECONDS.toMinutes(ts);
         return String.format("http://127.0.0.1/helloworld/%d/%d", minutes, random.nextInt(2000));
+    }
+
+    private String nextSessionId(ThreadLocalRandom random) {
+        return "session_" + random.nextInt(1000_0000);
     }
 }
 

@@ -29,7 +29,7 @@ jobs:
         timeout_minutes: 1
         max_attempts: 10
         retry_on: any
-        command: docker login --username='${{ secrets.ALICLOUD_USERNAME }}' --password='${{ secrets.ALICLOUD_PASSWORD }}' ${{ vars.ACR_IMAGE_REGISTRY }}
+        command: docker login --username='${{ secrets.ALICLOUD_USERNAME }}' --password='${{ secrets.ALICLOUD_PASSWORD }}' greptime-registry.cn-hangzhou.cr.aliyuncs.com
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3

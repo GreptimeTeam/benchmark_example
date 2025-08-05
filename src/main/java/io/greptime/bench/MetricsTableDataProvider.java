@@ -15,7 +15,7 @@ public class MetricsTableDataProvider implements TableDataProvider {
 
     /* Create a table with the following schema:
     ```sql
-    CREATE TABLE IF NOT EXISTS `tt_metrics_table` (
+    CREATE TABLE `tt_metrics_table` (
         `ts` TIMESTAMP(3) NOT NULL,
         `idc` STRING NULL INVERTED INDEX,
         `host` STRING NULL INVERTED INDEX,
@@ -26,8 +26,8 @@ public class MetricsTableDataProvider implements TableDataProvider {
         `memory_util` DOUBLE NULL,
         `disk_util` DOUBLE NULL,
         `load_util` DOUBLE NULL,
+        `session_id` STRING NULL,
         TIME INDEX (`ts`),
-        PRIMARY KEY (`idc`, `host`, `service`)
     )
     PARTITION ON COLUMNS (shard) (
         shard < 1,
@@ -35,7 +35,8 @@ public class MetricsTableDataProvider implements TableDataProvider {
     )
     ENGINE=mito
     WITH(
-        append_mode = 'true'
+        append_mode = 'true',
+        skip_wal = 'true',
     );
     ```
     */
@@ -47,10 +48,10 @@ public class MetricsTableDataProvider implements TableDataProvider {
     {
         this.tableSchema = TableSchema.newBuilder("tt_metrics_table")
                 .addTimestamp("ts", DataType.TimestampMillisecond)
-                .addTag("idc", DataType.String)
-                .addTag("host", DataType.String)
+                .addField("idc", DataType.String)
+                .addField("host", DataType.String)
                 .addField("shard", DataType.Int32)
-                .addTag("service", DataType.String)
+                .addField("service", DataType.String)
                 .addField("url", DataType.String)
                 .addField("cpu_util", DataType.Float64)
                 .addField("memory_util", DataType.Float64)
@@ -108,13 +109,14 @@ public class MetricsTableDataProvider implements TableDataProvider {
                     //
                     // Each app/host has 20 services.
                     for (int i = 0; i < serviceNumPerApp; i++) {
+                        int shard = i % 2 == 0 ? 0 : 1;
                         String service = nextService(random, app, i);
 
                         rows.add(new Object[] {
                             ts,
                             idc,
                             host,
-                            i,
+                            shard,
                             service,
                             url,
                             random.nextDouble(0, 100), // cpu_util
